@@ -18,7 +18,7 @@ public class TestDataSource {
         JdbcTemplate jt=new JdbcTemplate(ds);
 
         String sql="Insert into user( `name`, `email`, `password`, `role`) Values (?,?,?,?)";
-        Object [] param= new Object[]{"Kush","Kush@yash.com","123","Buyer"};
+        Object [] param= new Object[]{"Ananya","joshiji@yash.com","123456","Seller"};
         jt.update(sql,param);
         System.out.println("Executed Query Successfully!!!");
 

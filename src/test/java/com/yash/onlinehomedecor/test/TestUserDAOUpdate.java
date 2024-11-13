@@ -6,6 +6,7 @@ package com.yash.onlinehomedecor.test;
 import com.yash.onlinehomedecor.config.SpringRootConfig;
 import com.yash.onlinehomedecor.dao.UserDAO;
 import com.yash.onlinehomedecor.domain.User;
+import com.yash.onlinehomedecor.enums.UserRole;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -18,7 +19,7 @@ public class TestUserDAOUpdate {
         u.setName("Pratham");
         u.setEmail("pratham@gmail.com");
         u.setPassword("12345");
-        u.setRole(User.UserRole.BUYER);
+        u.setRole(UserRole.BUYER);
 
         userDAO.update(u);
         System.out.println("UPDATED!!");

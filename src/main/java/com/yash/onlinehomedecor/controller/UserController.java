@@ -3,6 +3,7 @@ package com.yash.onlinehomedecor.controller;
 import com.yash.onlinehomedecor.command.LoginCommand;
 import com.yash.onlinehomedecor.command.UserCommand;
 import com.yash.onlinehomedecor.domain.User;
+import com.yash.onlinehomedecor.enums.UserRole;
 import com.yash.onlinehomedecor.exception.UserBlockedException;
 import com.yash.onlinehomedecor.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +35,32 @@ public class UserController {
         try {
             User loggedInUser  = userService.login(cmd.getLoginName(), cmd.getPassword());
             addUserInSession(loggedInUser , session);
-            return "redirect:user/dashboard"; // Adjust according to your user dashboard URL
+            System.out.println("loggedInuser: " + loggedInUser);
+            if(loggedInUser.getRole()==UserRole.ADMIN){
+                return  "dashboard_admin";
+               // System.out.println("Admin called");
+                //return "redirect:/admin/dashboard";
+            }
+            else if (loggedInUser .getRole() == UserRole.SELLER) {
+                System.out.println("Seller called");
+                return "redirect:/seller/dashboard"; // Redirect to seller dashboard
+                //return "redirect:/admin/dashboard";
+            }
+            else if (loggedInUser .getRole() == UserRole.BUYER) {
+                System.out.println("Buyer called");
+                return "redirect:/user/dashboard"; // Redirect to buyer dashboard
+               // return "redirect:/admin/dashboard";
+            }
+            else{
+                System.out.println("else called");
+                return "index";
+
+                //return "redirect:/admin/dashboard";
+            }
+
         } catch (UserBlockedException ex) {
             model.addAttribute("err", ex.getMessage());
+            System.out.println("Exception called");
             return "index"; // JSP - Login FORM
         }
     }
@@ -44,7 +68,9 @@ public class UserController {
     @RequestMapping(value = "/logout")
     public String logout(HttpSession session) {
         session.invalidate();
-        return "redirect:index?act=lo";
+        System.out.println("logout called");
+        //return "redirect:index?act=lo";
+        return "index";
     }
 
     @RequestMapping(value = "/user/dashboard")
@@ -64,21 +90,45 @@ public class UserController {
         return "users"; // JSP for displaying user list
     }
 
+//    @RequestMapping(value = "/reg_form")
+//    public String registrationForm(Model model) {
+//        model.addAttribute("command", new UserCommand());
+//        return "reg_form"; // JSP for registration form
+//    }
+//
+//    @RequestMapping(value = "/register", method = RequestMethod.POST)
+//    public String registerUser (@ModelAttribute("command") UserCommand cmd, Model model) {
+//        try {
+//            User user = cmd.getUser ();
+//            userService.register(user);
+//            return "redirect:index?act=reg"; // Redirect to login page after successful registration
+//        } catch (DuplicateKeyException e) {
+//            model.addAttribute("err", "Email is already registered. Please select another email.");
+//            return "reg_form"; // JSP for registration form
+//        }
+//    }
+
     @RequestMapping(value = "/reg_form")
     public String registrationForm(Model model) {
-        model.addAttribute("command", new UserCommand());
-        return "reg_form"; // JSP for registration form
+        UserCommand userCommand = new UserCommand();
+        model.addAttribute("userCommand", userCommand);  // Change from "command" to "userCommand"
+        return "reg_form";//reg_form.jsp
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
-    public String registerUser (@ModelAttribute("command") UserCommand cmd, Model model) {
+    public String registerUser(@ModelAttribute("userCommand") UserCommand cmd, Model model) {  // Change from "command" to "userCommand"
         try {
-            User user = cmd.getUser ();
+            User user = cmd.getUser();
+            String selectedRole=cmd.getUser().getRole().name();
+            user.setRole(UserRole.valueOf(selectedRole));
+            System.out.println("register inside controller");
+            System.out.println("cmd: " + cmd.toString());
             userService.register(user);
-            return "redirect:index?act=reg"; // Redirect to login page after successful registration
+
+            return "redirect:index?act=reg";
         } catch (DuplicateKeyException e) {
             model.addAttribute("err", "Email is already registered. Please select another email.");
-            return "reg_form"; // JSP for registration form
+            return "reg_form";
         }
     }
 

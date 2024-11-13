@@ -27,6 +27,7 @@ public class SpringRootConfig {
         ds.setTestOnBorrow(true);
         ds.setValidationQuery("SELECT 1");
         ds.setDefaultAutoCommit(true);
+
         return ds;
     }
 }

@@ -20,14 +20,15 @@ import java.util.Map;
 public class UserDAOImpl extends BaseDAO implements UserDAO{
     @Override
     public void save(User u) {
-        String sql="INSERT INTO user (`name`, `email`, `password`, `role`)"+" VALUES (:name,:email,:password,:role)";
+        System.out.println("save in dao");
+        String sql="INSERT INTO user (`name`, `email`, `password`, `role`,`address`)"+" VALUES (:name,:email,:password,:role,:address)";
 
         Map m=new HashMap();
         m.put("name",u.getName());
         m.put("email",u.getEmail());
         m.put("password",u.getPassword());
         m.put("role",u.getRole().name());
-
+        m.put("address",u.getAddress());
         KeyHolder kh=new GeneratedKeyHolder();// holds value which get auto incremented
         SqlParameterSource ps=new MapSqlParameterSource(m);
         super.getNamedParameterJdbcTemplate().update(sql,ps,kh);
@@ -43,7 +44,8 @@ public class UserDAOImpl extends BaseDAO implements UserDAO{
                 "SET `name` = :name, " +
                 "`email` = :email, " +
                 "`password` = :password, " +
-                "`role` = :role " +
+                "`role` = :role ," +
+                "`address`=:address"+
                 "WHERE id = :userId";
         Map m = new HashMap();
         m.put("name", u.getName());
@@ -55,6 +57,7 @@ public class UserDAOImpl extends BaseDAO implements UserDAO{
         m.put("userId", u.getId());
 
         m.put("password",u.getPassword());
+        m.put("address",u.getAddress());
         getNamedParameterJdbcTemplate().update(sql, m);
     }
 
